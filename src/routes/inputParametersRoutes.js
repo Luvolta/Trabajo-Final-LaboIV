@@ -1,8 +1,8 @@
 const express = require('express');
-const { createInputParameter, getInputParameters } = require('../controllers/inputParametersController');
 const router = express.Router();
+const { generateAndLogIdea } = require('../controllers/inputParametersController');
 
-router.post('/', createInputParameter); 
-router.get('/', getInputParameters);
+// Define la ruta para manejar la solicitud POST
+router.post('/', generateAndLogIdea); 
 
 module.exports = router;

@@ -1,23 +1,24 @@
 // src/server.js
 const express = require('express');
-const bodyParser = require('body-parser');
 const cors = require('cors');
-const authRoutes = require('./routes/authRoutes'); // Importar rutas de autenticación
-const usersRoutes = require('./routes/usersRoutes'); // Importar rutas de usuarios
-const ideasRoutes = require('./routes/ideasRoutes'); // Importar rutas de ideas
-const inputParametersRoutes = require('./routes/inputParametersRoutes'); // Importar rutas de parámetros de entrada
-const favoritesRoutes = require('./routes/favoritesRoutes'); // Importar rutas de favoritos
-const ideaHistoryRoutes = require('./routes/ideaHistorysRoutes'); // Importar rutas de historial de ideas
 const db = require('./config/db'); // Conexión a la base de datos
 const swaggerJsDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 
+// Importar rutas
+const authRoutes = require('./routes/authRoutes');
+const usersRoutes = require('./routes/usersRoutes');
+const ideasRoutes = require('./routes/ideasRoutes');
+const inputParametersRoutes = require('./routes/inputParametersRoutes');
+const favoritesRoutes = require('./routes/favoritesRoutes');
+const ideaHistoryRoutes = require('./routes/ideaHistorysRoutes');
+
 const app = express();
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 
 // Middleware
 app.use(cors());
-app.use(bodyParser.json());
+app.use(express.json());
 
 // Configuración de Swagger
 const swaggerOptions = {
@@ -28,11 +29,7 @@ const swaggerOptions = {
             version: '1.0.0',
             description: 'API para generar ideas de proyectos',
         },
-        servers: [
-            {
-                url: `http://localhost:${PORT}`,
-            },
-        ],
+        servers: [{ url: `http://localhost:${PORT}` }],
     },
     apis: ['./routes/*.js'], // Rutas donde Swagger buscará las definiciones
 };
@@ -42,21 +39,20 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 // Usar las rutas
 app.use('/api', authRoutes);
-app.use('/api/users', usersRoutes); // Asegúrate de que esta variable se llame usersRoutes
-app.use('/api/ideas', ideasRoutes); // Asegúrate de que esta variable se llame ideasRoutes
-app.use('/api/input-parameters', inputParametersRoutes); // Asegúrate de que esta variable se llame inputParametersRoutes
-app.use('/api/favorites', favoritesRoutes); // Asegúrate de que esta variable se llame favoritesRoutes
-app.use('/api/idea-history', ideaHistoryRoutes); // Asegúrate de que esta variable se llame ideaHistoryRoutes
+app.use('/api/users', usersRoutes);
+app.use('/api/ideas', ideasRoutes);
+app.use('/api/input-parameters', inputParametersRoutes);
+app.use('/api/favorites', favoritesRoutes);
+app.use('/api/idea-history', ideaHistoryRoutes);
 
-// Sincronizar la base de datos y manejar posibles errores
+// Conexión a la base de datos y arranque del servidor
 db.connect((err) => {
     if (err) {
         console.error('Error conectando a la base de datos:', err);
-        return; // Salir si hay un error
+        return;
     }
     console.log('Conectado a la base de datos MySQL');
 
-    // Iniciar el servidor solo si la conexión fue exitosa
     app.listen(PORT, () => {
         console.log(`Servidor escuchando en http://localhost:${PORT}`);
     });
