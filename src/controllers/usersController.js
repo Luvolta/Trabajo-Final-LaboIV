@@ -3,14 +3,14 @@ const db = require('../config/db');
 
 // Crear un nuevo usuario
 const createUser = (req, res) => {
-    const { name, email, password } = req.body;
-    const query = 'INSERT INTO users (name, email, password) VALUES (?, ?, ?)';
-    db.query(query, [name, email, password], (err, results) => {
+    const { email, password } = req.body; // Eliminamos 'name'
+    const query = 'INSERT INTO users (email, password) VALUES (?, ?)';
+    db.query(query, [email, password], (err, results) => {
         if (err) {
             console.error('Error creando el usuario:', err);
             return res.status(500).json({ message: 'Error creando el usuario' });
         }
-        res.status(201).json({ id: results.insertId, name, email });
+        res.status(201).json({ id: results.insertId, email }); // Usamos solo el 'email'
     });
 };
 

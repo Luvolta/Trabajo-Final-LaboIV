@@ -1,34 +1,44 @@
-// src/models/ideaModel.js
-const db = require('../config/db');
+// src/models/Idea.js
+const { DataTypes } = require('sequelize');
+const sequelize = require('../config/db');
+const User = require('./User'); // Importar modelo de usuario
 
-const Idea = {
-    create: (ideaData) => {
-        const { description, recommendedTechnologies, designPatterns, additionalFeatures, difficultyLevel, projectType } = ideaData;
-        
-        const query = 'INSERT INTO ideas (description, recommended_technologies, design_patterns, additional_features, difficulty_level, project_type) VALUES (?, ?, ?, ?, ?, ?)';
-        
-        db.query(query, [description, JSON.stringify(recommendedTechnologies), JSON.stringify(designPatterns), JSON.stringify(additionalFeatures), difficultyLevel, projectType], (err, results) => {
-            if (err) {
-                console.error('Error al guardar la idea en la base de datos:', err);
-                return;
-            }
-            console.log('Idea guardada con éxito:', results.insertId);
-        });
+const Idea = sequelize.define('Idea', {
+    ideaId: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
     },
+    description: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+    },
+    recommendedTechnologies: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+    },
+    designPatterns: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+    },
+    additionalFeatures: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+    },
+    knowledgeLevel: {
+        type: DataTypes.STRING(20),
+        allowNull: true,
+    },
+    generationDate: {
+        type: DataTypes.DATE,
+        allowNull: false,
+    },
+}, {
+    tableName: 'ideas',
+    timestamps: false,
+});
 
-    getHistory: (userId) => {
-        const query = 'SELECT * FROM ideas WHERE user_id = ? ORDER BY created_at DESC';
-        
-        return new Promise((resolve, reject) => {
-            db.query(query, [userId], (err, results) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(results);
-                }
-            });
-        });
-    }
-};
+// Relación con User
+Idea.belongsTo(User, { foreignKey: 'userId' });
 
 module.exports = Idea;
