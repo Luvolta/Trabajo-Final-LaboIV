@@ -5,9 +5,9 @@ const cors = require('cors');
 const authRoutes = require('./routes/authRoutes'); // Importar rutas de autenticación
 const usersRoutes = require('./routes/usersRoutes'); // Importar rutas de usuarios
 const ideasRoutes = require('./routes/ideasRoutes'); // Importar rutas de ideas
-const inputsParametersRoutes = require('./routes/inputParametersRoutes'); // Importar rutas de parámetros de entrada
+const inputParametersRoutes = require('./routes/inputParametersRoutes'); // Importar rutas de parámetros de entrada
 const favoritesRoutes = require('./routes/favoritesRoutes'); // Importar rutas de favoritos
-const ideaHistorysRoutes = require('./routes/ideaHistorysRoutes'); // Importar rutas de historial de ideas
+const ideaHistoryRoutes = require('./routes/ideaHistorysRoutes'); // Importar rutas de historial de ideas
 const db = require('./config/db'); // Conexión a la base de datos
 const swaggerJsDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
@@ -40,23 +40,24 @@ const swaggerOptions = {
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
-// Usar las rutas de autenticación
+// Usar las rutas
 app.use('/api', authRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/ideas', ideaRoutes);
-app.use('/api/input-parameters', inputParameterRoutes);
-app.use('/api/favorites', favoriteRoutes);
-app.use('/api/idea-history', ideaHistoryRoutes);
+app.use('/api/users', usersRoutes); // Asegúrate de que esta variable se llame usersRoutes
+app.use('/api/ideas', ideasRoutes); // Asegúrate de que esta variable se llame ideasRoutes
+app.use('/api/input-parameters', inputParametersRoutes); // Asegúrate de que esta variable se llame inputParametersRoutes
+app.use('/api/favorites', favoritesRoutes); // Asegúrate de que esta variable se llame favoritesRoutes
+app.use('/api/idea-history', ideaHistoryRoutes); // Asegúrate de que esta variable se llame ideaHistoryRoutes
 
 // Sincronizar la base de datos y manejar posibles errores
-db.sync()
-    .then(() => {
-        console.log('Base de datos sincronizada');
-        // Iniciar el servidor solo si la sincronización fue exitosa
-        app.listen(PORT, () => {
-            console.log(`Servidor escuchando en http://localhost:${PORT}`);
-        });
-    })
-    .catch((error) => {
-        console.error('Error sincronizando la base de datos:', error);
+db.connect((err) => {
+    if (err) {
+        console.error('Error conectando a la base de datos:', err);
+        return; // Salir si hay un error
+    }
+    console.log('Conectado a la base de datos MySQL');
+
+    // Iniciar el servidor solo si la conexión fue exitosa
+    app.listen(PORT, () => {
+        console.log(`Servidor escuchando en http://localhost:${PORT}`);
     });
+});

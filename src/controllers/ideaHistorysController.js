@@ -14,7 +14,7 @@ const createIdeaHistory = (req, res) => {
 };
 
 // Obtener todo el historial de ideas de un usuario
-const getIdeaHistory = (req, res) => {
+const getIdeaHistories = (req, res) => {
     const { userId } = req.params;
     const query = 'SELECT * FROM ideaHistory WHERE userId = ?';
     db.query(query, [userId], (err, results) => {
@@ -29,5 +29,5 @@ const getIdeaHistory = (req, res) => {
 // Exportar los controladores
 module.exports = {
     createIdeaHistory,
-    getIdeaHistory,
+    getIdeaHistories,
 };
