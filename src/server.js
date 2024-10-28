@@ -13,6 +13,8 @@ const inputParametersRoutes = require('./routes/inputParametersRoutes');
 const favoritesRoutes = require('./routes/favoritesRoutes');
 const ideaHistoryRoutes = require('./routes/ideaHistorysRoutes');
 
+const authMiddleware = require('./middleware/authMiddleware');
+
 const app = express();
 const PORT = process.env.PORT || 3001;
 
@@ -38,12 +40,11 @@ const swaggerDocs = swaggerJsDoc(swaggerOptions);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 // Usar las rutas
-app.use('/api', authRoutes);
 app.use('/api/users', usersRoutes);
-app.use('/api/ideas', ideasRoutes);
-app.use('/api/input-parameters', inputParametersRoutes);
-app.use('/api/favorites', favoritesRoutes);
-app.use('/api/idea-history', ideaHistoryRoutes);
+app.use('/api/ideas',authMiddleware, ideasRoutes);
+app.use('/api/input-parameters',authMiddleware, inputParametersRoutes);
+app.use('/api/favorites',authMiddleware, favoritesRoutes);
+app.use('/api/idea-history',authMiddleware, ideaHistoryRoutes);
 
 // Conexión a la base de datos y arranque del servidor
 db.connect((err) => {

@@ -5,7 +5,7 @@ require('dotenv').config();
 const generateAndLogIdea = async (req, res) => {
     const { theme, technologies, knowledgeLevel, preferredDesignPatterns, description, purpose, userId } = req.body;
 
-    console.log('Receiving request to create a new input parameter:', req.body);
+    // console.log('Receiving request to create a new input parameter:', req.body);
 
     // Validación básica
     if (!theme || !technologies || !knowledgeLevel || !preferredDesignPatterns || !description || !purpose || !userId) {
@@ -41,7 +41,7 @@ const generateAndLogIdea = async (req, res) => {
             return res.status(500).json({ message: 'Error creating the input parameter.' });
         }
 
-        console.log('Input parameter created successfully, ID:', results.insertId);
+        // console.log('Input parameter created successfully, ID:', results.insertId);
 
         // Generar una idea utilizando Google Generative AI
         const formattedPrompt = `Generate a project idea about ${theme} focusing on ${purpose}, using ${technologies}. The response should follow the format: NameIdea-description-recommendedTechnologies-designPatterns-additionalFeatures-knowledgeLevel-todayDate.`;
@@ -55,7 +55,7 @@ const generateAndLogIdea = async (req, res) => {
             // Guardar idea en la tabla de ideas
             const saveIdeaQuery = `
                 INSERT INTO ideas (description, recommendedTechnologies, designPatterns, additionalFeatures, knowledgeLevel, generationDate, userId)
-                VALUES (?, ?, ?, ?, ?, ?, ?)`;
+                VALUES (?, ?, ?, ?, ?, NOW(), ?)`;
             
             const ideaData = [
                 generatedDescription,
@@ -63,17 +63,29 @@ const generateAndLogIdea = async (req, res) => {
                 designPatterns,
                 additionalFeatures,
                 knowledgeLevelResponse,
-                new Date(), // Genera la fecha y hora actual
                 userId // ID del usuario que se asume ya existe
             ];
 
-            db.query(saveIdeaQuery, ideaData, (err) => {
+            db.query(saveIdeaQuery, ideaData, (err, ideaResults) => {
                 if (err) {
                     console.error('Error saving the idea:', err);
                     return res.status(500).json({ message: 'Error saving the generated idea.' });
                 }
 
-                res.status(201).json({ message: 'Idea saved successfully!', nameIdea });
+                console.log('Idea saved successfully, ID:', ideaResults.insertId);
+
+                // Guardar en el historial de ideas
+                const saveHistoryQuery = 'INSERT INTO ideaHistory (userId, ideaId, parameterId, queryDate) VALUES (?, ?, ?, NOW())';
+                
+
+                db.query(saveHistoryQuery, [userId, ideaResults.insertId, results.insertId], (err) => {
+                    if (err) {
+                        console.error('Error saving to idea history:', err);
+                        return res.status(500).json({ message: 'Error saving to idea history.' });
+                    }
+
+                    res.status(201).json({ message: 'Idea saved successfully!', nameIdea });
+                });
             });
         } catch (apiError) {
             console.error('Error calling the Google Generative AI:', apiError);
@@ -102,7 +114,7 @@ const generateIdeaFromAPI = async (formattedPrompt) => {
         // Verifica si la respuesta tiene el formato correcto
         if (result && result.response && typeof result.response.text === 'function') {
             const generatedText = result.response.text();
-            console.log('Response from the Gemini API received:', generatedText);
+            // console.log('Response from the Gemini API received:', generatedText);
             return generatedText; // Retorna el texto generado
         } else {
             throw new Error('Unexpected response format from the Gemini API');
@@ -111,6 +123,8 @@ const generateIdeaFromAPI = async (formattedPrompt) => {
         console.error('Error calling the Google Generative AI:', error);
         throw error; // Permitir que el error sea manejado en la función de llamada
     }
+
+    
 };
 
 module.exports = {
