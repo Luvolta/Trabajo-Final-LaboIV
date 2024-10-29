@@ -1,5 +1,6 @@
 const db = require('../config/db');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 // Función para registrar un nuevo usuario
 const registerUser = async (req, res) => {
@@ -31,7 +32,9 @@ const registerUser = async (req, res) => {
                 console.error('Error creando el usuario:', err);
                 return res.status(500).json({ message: 'Error creando el usuario' });
             }
-            res.status(201).json({ userId: results.insertId, email });
+            // Generar un token JWT
+            const token = jwt.sign({ id: results.insertId, email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+            res.status(201).json({ userId: results.insertId, email, token });
         });
     });
 };
@@ -63,8 +66,9 @@ const loginUser = (req, res) => {
             return res.status(401).json({ message: 'Credenciales incorrectas.' });
         }
 
-        // Iniciar sesión exitoso
-        res.status(200).json({ userId: user.userId, email: user.email });
+        // Iniciar sesión exitoso y generar token JWT
+        const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        res.status(200).json({ userId: user.id, email: user.email, token });
     });
 };
 
