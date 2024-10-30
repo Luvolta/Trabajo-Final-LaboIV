@@ -6,7 +6,6 @@ const router = express.Router();
 
 const SECRET_KEY = 'tu_clave_secreta'; // Cambia esto por una clave secreta más segura
 
-    // Ruta para iniciar sesión
 // Ruta para iniciar sesión
 router.post('/login', (req, res) => {
     const { email, password } = req.body;

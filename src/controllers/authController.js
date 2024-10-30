@@ -11,14 +11,12 @@ const registerUser = async (req, res) => {
         return res.status(400).json({ message: 'Por favor, proporciona email y contraseña.' });
     }
 
-    // Verificar si el usuario ya existe
-    const userQuery = 'SELECT * FROM users WHERE email = ?';
-    db.query(userQuery, [email], async (err, results) => {
-        if (err) {
-            console.error('Error verificando el usuario:', err);
-            return res.status(500).json({ message: 'Error verificando el usuario' });
-        }
-        if (results.length > 0) {
+    try {
+        // Verificar si el usuario ya existe
+        const userQuery = 'SELECT * FROM users WHERE email = ?';
+        const [existingUser] = await db.query(userQuery, [email]);
+
+        if (existingUser.length > 0) {
             return res.status(409).json({ message: 'El usuario ya existe.' });
         }
 
@@ -27,20 +25,20 @@ const registerUser = async (req, res) => {
 
         // Insertar el nuevo usuario en la base de datos
         const insertQuery = 'INSERT INTO users (email, password) VALUES (?, ?)';
-        db.query(insertQuery, [email, hashedPassword], (err, results) => {
-            if (err) {
-                console.error('Error creando el usuario:', err);
-                return res.status(500).json({ message: 'Error creando el usuario' });
-            }
-            // Generar un token JWT
-            const token = jwt.sign({ id: results.insertId, email }, process.env.JWT_SECRET, { expiresIn: '1h' });
-            res.status(201).json({ userId: results.insertId, email, token });
-        });
-    });
+        const result = await db.query(insertQuery, [email, hashedPassword]);
+
+        // Generar un token JWT
+        const token = jwt.sign({ id: result.insertId, email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+        res.status(201).json({ userId: result.insertId, email, token });
+    } catch (err) {
+        console.error('Error creando el usuario:', err);
+        res.status(500).json({ message: 'Error creando el usuario' });
+    }
 };
 
 // Función para iniciar sesión
-const loginUser = (req, res) => {
+const loginUser = async (req, res) => {
     const { email, password } = req.body;
 
     // Validar que se reciban todos los campos necesarios
@@ -48,13 +46,11 @@ const loginUser = (req, res) => {
         return res.status(400).json({ message: 'Por favor, proporciona email y contraseña.' });
     }
 
-    // Buscar el usuario en la base de datos
-    const userQuery = 'SELECT * FROM users WHERE email = ?';
-    db.query(userQuery, [email], async (err, results) => {
-        if (err) {
-            console.error('Error buscando el usuario:', err);
-            return res.status(500).json({ message: 'Error buscando el usuario' });
-        }
+    try {
+        // Buscar el usuario en la base de datos
+        const userQuery = 'SELECT * FROM users WHERE email = ?';
+        const [results] = await db.query(userQuery, [email]);
+
         if (results.length === 0) {
             return res.status(401).json({ message: 'Credenciales incorrectas.' });
         }
@@ -62,14 +58,19 @@ const loginUser = (req, res) => {
         // Verificar la contraseña
         const user = results[0];
         const isMatch = await bcrypt.compare(password, user.password);
+        
         if (!isMatch) {
             return res.status(401).json({ message: 'Credenciales incorrectas.' });
         }
 
         // Iniciar sesión exitoso y generar token JWT
         const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
         res.status(200).json({ userId: user.id, email: user.email, token });
-    });
+    } catch (err) {
+        console.error('Error durante el inicio de sesión:', err);
+        res.status(500).json({ message: 'Error durante el inicio de sesión' });
+    }
 };
 
 // Exportar las funciones del controlador
