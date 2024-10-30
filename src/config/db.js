@@ -2,10 +2,11 @@
 const mysql = require('mysql2');
 
 const db = mysql.createConnection({
-    host: 'mysql-labo4.alwaysdata.net', // Solo especifica el host
-    user: 'root',
-    password: 'luvolta',
-    database: 'idea_generator'
+    host: 'mysql-labo4.alwaysdata.net',
+    user: 'luvolta',
+    password: 'TrabajoLaboFinal',
+    database: 'luvolta_labo4',
+    connectTimeout: 10000 
 });
 
 db.connect((err) => {
