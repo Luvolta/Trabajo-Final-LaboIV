@@ -2,9 +2,9 @@
 const mysql = require('mysql2');
 
 const db = mysql.createConnection({
-    host: 'localhost', // Solo especifica el host
+    host: 'mysql-labo4.alwaysdata.net', // Solo especifica el host
     user: 'root',
-    password: 'root',
+    password: 'luvolta',
     database: 'idea_generator'
 });
 
