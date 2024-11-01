@@ -6,43 +6,72 @@ const router = express.Router();
 
 const SECRET_KEY = 'tu_clave_secreta'; // Cambia esto por una clave secreta más segura
 
-// Ruta para iniciar sesión
+/**
+ * @openapi
+ * '/api/auth/login':
+ *   get:
+ *     description: Ruta para iniciar sesión
+ *     summary: Ruta para iniciar sesión
+ *     responses:
+ *       '200':
+ *         description: OK
+ *         content:
+ *           'application/json':
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 thing:
+ *                   $ref: '#/components/schemas/UserAccount'
+ * components:
+ *   schemas:
+ *     UserAccount:
+ *       type: object
+ *       required:
+ *         - username
+ *       properties:
+ *         username:
+ *           type: string
+ */
 router.post('/login', (req, res) => {
-    const { email, password } = req.body;
+  const { email, password } = req.body;
 
-    console.log('Datos de inicio de sesión:', { email, password }); // Log de las credenciales
+  console.log('Datos de inicio de sesión:', { email, password }); // Log de las credenciales
 
-    const query = 'SELECT * FROM users WHERE email = ?';
-    db.query(query, [email], (error, results) => {
-        if (error || results.length === 0) {
-            console.error('Error de credenciales:', error || 'No se encontró el usuario');
-            return res.status(401).json({ message: 'Credenciales incorrectas' });
+  const query = 'SELECT * FROM users WHERE email = ?';
+  db.query(query, [email], (error, results) => {
+    if (error || results.length === 0) {
+      console.error(
+        'Error de credenciales:',
+        error || 'No se encontró el usuario'
+      );
+      return res.status(401).json({ message: 'Credenciales incorrectas' });
+    }
+
+    const user = results[0];
+
+    // Comparar la contraseña
+    bcrypt.compare(password, user.password, (err, match) => {
+      if (err || !match) {
+        console.error('Error en la comparación de contraseña:', err);
+        return res.status(401).json({ message: 'Credenciales incorrectas' });
+      }
+
+      // Crear un token
+      const token = jwt.sign({ userId: user.userId }, SECRET_KEY, {
+        expiresIn: '1h'
+      });
+
+      // Enviar la respuesta con el token y la información del usuario
+      res.json({
+        message: 'Inicio de sesión exitoso',
+        token,
+        user: {
+          userId: user.userId,
+          email: user.email
         }
-
-        const user = results[0];
-
-        // Comparar la contraseña
-        bcrypt.compare(password, user.password, (err, match) => {
-            if (err || !match) {
-                console.error('Error en la comparación de contraseña:', err);
-                return res.status(401).json({ message: 'Credenciales incorrectas' });
-            }
-
-            // Crear un token
-            const token = jwt.sign({ userId: user.userId }, SECRET_KEY, { expiresIn: '1h' });
-
-            // Enviar la respuesta con el token y la información del usuario
-            res.json({
-                message: 'Inicio de sesión exitoso',
-                token,
-                user: {
-                    userId: user.userId,
-                    email: user.email
-                }
-            });
-        });
+      });
     });
+  });
 });
-
 
 module.exports = router;
