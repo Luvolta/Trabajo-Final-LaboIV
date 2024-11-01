@@ -9,10 +9,19 @@ const SECRET_KEY = 'tu_clave_secreta'; // Cambia esto por una clave secreta más
 /**
  * @openapi
  * '/api/auth/login':
- *   get:
+ *   post:
  *     description: Ruta para iniciar sesión
  *     summary: Ruta para iniciar sesión
  *     responses:
+ *       '401':
+ *              description: Credenciales incorrectas
+ *              content:
+ *                  'application/json':
+ *                      schema:
+ *                          type: object
+ *                          properties:
+ *                              message:
+ *                               type: string
  *       '200':
  *         description: OK
  *         content:
@@ -20,16 +29,24 @@ const SECRET_KEY = 'tu_clave_secreta'; // Cambia esto por una clave secreta más
  *             schema:
  *               type: object
  *               properties:
- *                 thing:
- *                   $ref: '#/components/schemas/UserAccount'
+ *                 message:
+ *                  type: string
+ *                 token:
+ *                  type: string
+ *                 user:
+ *                   $ref: '#/components/schemas/userAccount'
+ *
  * components:
  *   schemas:
- *     UserAccount:
+ *     userAccount:
  *       type: object
  *       required:
- *         - username
+ *        - userId
+ *        - email
  *       properties:
- *         username:
+ *          userId:
+ *           type: number
+ *          email:
  *           type: string
  */
 router.post('/login', (req, res) => {
