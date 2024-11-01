@@ -1,4 +1,8 @@
 {
+  "name": "trabajo-final-laboiv",
+  "version": "1.0.0",
+  "description": "Aplicacion back-end para el trabajo de Laboratorio IV",
+  "main": "src/server.js",
   "dependencies": {
     "@google/generative-ai": "^0.21.0",
     "axios": "^1.7.7",
@@ -18,5 +22,8 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js"
-  }
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }
