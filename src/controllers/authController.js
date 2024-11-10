@@ -63,6 +63,8 @@ const loginUser = async (req, res) => {
             return res.status(401).json({ message: 'Credenciales incorrectas.' });
         }
 
+        console.log("secretKey", process.env.JWT_SECRET);
+
         // Iniciar sesión exitoso y generar token JWT
         const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
