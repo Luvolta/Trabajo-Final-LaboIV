@@ -1,8 +1,9 @@
 const express = require('express');
-const { createIdeaHistory, getIdeaHistories } = require('../controllers/ideaHistorysController');
+const { createIdeaHistory, getIdeaHistories, getIdeaById } = require('../controllers/ideaHistorysController');
 const router = express.Router();
 
 router.post('/', createIdeaHistory);
-router.get('/', getIdeaHistories);
+router.get('/:userId', getIdeaHistories); 
+router.get('/idea/:ideaId', getIdeaById);
 
 module.exports = router;

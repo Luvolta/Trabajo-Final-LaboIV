@@ -1,14 +1,13 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const db = require('../config/db'); // Importa la conexión a la base de datos
+const db = require('../config/db'); 
 const router = express.Router();
 
 // Ruta para iniciar sesión
 router.post('/login', (req, res) => {
     const { email, password } = req.body;
 
-    console.log('Datos de inicio de sesión:', { email, password }); // Log de las credenciales
 
     const query = 'SELECT * FROM users WHERE email = ?';
     db.query(query, [email], (error, results) => {
@@ -27,7 +26,7 @@ router.post('/login', (req, res) => {
             }
 
             // Crear un token
-            const token = jwt.sign({ userId: user.userId }, process.env.JWT_SECRET, { expiresIn: '1h' });
+            const token = jwt.sign({ userId: user.userId }, process.env.JWT_SECRET, { expiresIn: '2h' });
 
             // Enviar la respuesta con el token y la información del usuario
             res.json({

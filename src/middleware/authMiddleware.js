@@ -13,13 +13,10 @@ const authMiddleware = (req, res, next) => {
     // Obtener el valor del token sin "Bearer"
     const tokenValue = token.split(' ')[1];
 
-    console.log('Token después de split:', tokenValue);
-    console.log("Clave secreta utilizada:", secretKey);
 
     try {
         // Verificar el token
         const decoded = jwt.verify(tokenValue, secretKey);
-        console.log('Token decodificado:', decoded);
 
         // Asignar datos decodificados a la solicitud
         req.userId = decoded.userId; // Ajusta esto según los datos que necesites
