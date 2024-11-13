@@ -1,10 +1,8 @@
 const express = require('express');
 const router = express.Router();
+
 const ideasController = require('../controllers/ideasController');
 const authMiddleware = require('../middleware/authMiddleware'); // Si usas autenticación
-
-
-
 
 /**
  * @swagger
@@ -20,10 +18,7 @@ const authMiddleware = require('../middleware/authMiddleware'); // Si usas auten
  *         application/json:
  *           schema:
  *             type: object
- *             properties:
- *               title:
- *                 type: string
- *                 description: Título de la idea.
+ *             properties:              
  *               description:
  *                 type: string
  *                 description: Descripción de la idea.
@@ -69,9 +64,7 @@ router.post('/', authMiddleware, ideasController.createIdea);  // Requiere auten
  *                 type: object
  *                 properties:
  *                   id:
- *                     type: integer
- *                   title:
- *                     type: string
+ *                     type: integer                 
  *                   description:
  *                     type: string
  *                   userId:
@@ -105,9 +98,7 @@ router.get('/', ideasController.getAllIdeas);
  *               type: object
  *               properties:
  *                 id:
- *                   type: integer
- *                 title:
- *                   type: string
+ *                   type: integer                
  *                 description:
  *                   type: string
  *                 userId:
@@ -140,10 +131,7 @@ router.get('/:id', ideasController.getIdeaById);
  *         application/json:
  *           schema:
  *             type: object
- *             properties:
- *               title:
- *                 type: string
- *                 description: Nuevo título de la idea.
+ *             properties:              
  *               description:
  *                 type: string
  *                 description: Nueva descripción de la idea.

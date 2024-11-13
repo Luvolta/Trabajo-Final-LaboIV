@@ -26,9 +26,11 @@ const usersController = require('../controllers/usersController');
  *               email:
  *                 type: string
  *                 description: El correo electrónico del usuario
+ *                 example: tomas@gmail.com
  *               password:
  *                 type: string
  *                 description: La contraseña del usuario
+ *                 example: tomate123
  *             required:
  *               - email
  *               - password

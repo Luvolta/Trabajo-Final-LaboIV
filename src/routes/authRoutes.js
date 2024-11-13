@@ -2,7 +2,6 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const db = require('../config/db'); 
-const { configDotenv } = require('dotenv');
 const router = express.Router();
 
 
@@ -30,9 +29,11 @@ const router = express.Router();
  *               email:
  *                 type: string
  *                 description: El email del usuario
+ *                 example: papafrancisco@hotmail.com
  *               password:
  *                 type: string
  *                 description: La contraseña del usuario
+ *                 example: vaticano
  *             required:
  *               - email
  *               - password

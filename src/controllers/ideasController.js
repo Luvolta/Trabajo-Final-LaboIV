@@ -2,9 +2,9 @@ const db = require('../config/db');
 
 // Crear una nueva idea
 exports.createIdea = (req, res) => {
-    const { title, description, userId } = req.body;
-    const query = 'INSERT INTO ideas (title, description, userId) VALUES (?, ?, ?)';
-    db.query(query, [title, description, userId], (error) => {
+    const {  description, userId } = req.body;
+    const query = 'INSERT INTO ideas ( description, userId) VALUES (?, ?, ?)';
+    db.query(query, [ description, userId], (error) => {
         if (error) {
             return res.status(500).json({ message: 'Error creando la idea' });
         }
@@ -38,9 +38,9 @@ exports.getIdeaById = (req, res) => {
 // Actualizar una idea
 exports.updateIdea = (req, res) => {
     const { id } = req.params;
-    const { title, description } = req.body;
-    const query = 'UPDATE ideas SET title = ?, description = ? WHERE id = ?';
-    db.query(query, [title, description, id], (error) => {
+    const {  description } = req.body;
+    const query = 'UPDATE ideas SET = ?, description = ? WHERE id = ?';
+    db.query(query, [ description, id], (error) => {
         if (error) {
             return res.status(500).json({ message: 'Error actualizando la idea' });
         }
