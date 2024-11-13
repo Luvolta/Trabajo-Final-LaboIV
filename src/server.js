@@ -29,18 +29,30 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// Configuración de Swagger
+// Configuración de Swagger  
 const swaggerOptions = {
-    swaggerDefinition: {
-        openapi: '3.0.0',
-        info: {
-            title: 'Idea Generator API',
-            version: '1.0.0',
-            description: 'API para generar ideas de proyectos',
-        },
-        servers: [{ url: `http://localhost:${PORT}` }],
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'Idea Generator API',
+      version: '1.0.0',
+      description: 'API para generar ideas de proyectos'
     },
-    apis: ['./routes/*.js'], // Rutas donde Swagger buscará las definiciones
+    servers: [{ url: `http://localhost:3001` }],
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT'
+        }
+      }
+    },
+    security: [{
+      bearerAuth: []
+    }]
+  },
+  apis: ['src/routes/*.js'] // Ruta donde Swagger buscará las definiciones
 };
 
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
