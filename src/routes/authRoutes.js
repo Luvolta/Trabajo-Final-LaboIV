@@ -2,9 +2,9 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const db = require('../config/db'); 
+const { configDotenv } = require('dotenv');
 const router = express.Router();
 
-const SECRET_KEY = 'tu_clave_secreta';
 
 /**
  * @swagger
@@ -97,7 +97,7 @@ router.post('/login', (req, res) => {
         }
   
         // Si las credenciales son correctas, se crea un token JWT
-        const token = jwt.sign({ userId: user.userId }, SECRET_KEY, { expiresIn: '1h' });
+        const token = jwt.sign({ userId: user.userId }, process.env.JWT_SECRET, { expiresIn: '1h' });
   
         // Responder con el token y la información del usuario
         res.json({
