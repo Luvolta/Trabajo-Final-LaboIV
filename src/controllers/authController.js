@@ -28,7 +28,7 @@ const registerUser = async (req, res) => {
         const result = await db.query(insertQuery, [email, hashedPassword]);
 
         // Generar un token JWT
-        const token = jwt.sign({ id: result.insertId, email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign({ id: result.insertId, email }, process.env.JWT_SECRET, { expiresIn: '2h' });
 
         res.status(201).json({ userId: result.insertId, email, token });
     } catch (err) {
@@ -63,8 +63,9 @@ const loginUser = async (req, res) => {
             return res.status(401).json({ message: 'Credenciales incorrectas.' });
         }
 
+
         // Iniciar sesión exitoso y generar token JWT
-        const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '2h' });
 
         res.status(200).json({ userId: user.id, email: user.email, token });
     } catch (err) {
