@@ -8,6 +8,16 @@ const dotenv = require('dotenv'); // Para cargar variables de entorno
 
 dotenv.config(); // Cargar variables de entorno
 
+if (
+  !(process.env.API_KEY || '').trim() ||
+  !(process.env.JWT_SECRET || '').trim()
+) {
+  console.error(
+    'FALTAN LAS VARIABLES DE ENTORNO (Archivo .env en la raíz del proyecto)'
+  );
+  process.exit(1);
+}
+
 // Importar rutas
 const authRoutes = require('./routes/authRoutes');
 const usersRoutes = require('./routes/usersRoutes');
@@ -22,14 +32,16 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 // Middleware
-app.use(cors({
+app.use(
+  cors({
     origin: 'http://localhost:5173', // Cambia esto según tu frontend
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true
-}));
+  })
+);
 app.use(express.json());
 
-// Configuración de Swagger  
+// Configuración de Swagger
 const swaggerOptions = {
   definition: {
     openapi: '3.0.0',
@@ -48,9 +60,11 @@ const swaggerOptions = {
         }
       }
     },
-    security: [{
-      bearerAuth: []
-    }]
+    security: [
+      {
+        bearerAuth: []
+      }
+    ]
   },
   apis: ['src/routes/*.js'] // Ruta donde Swagger buscará las definiciones
 };
@@ -67,14 +81,14 @@ app.use('/api/favorites', authMiddleware, favoritesRoutes);
 app.use('/api/idea-history', authMiddleware, ideaHistoryRoutes);
 
 // Conexión a la base de datos y arranque del servidor
-db.connect((err) => {
-    if (err) {
-        console.error('Error conectando a la base de datos:', err);
-        return;
-    }
-    console.log('Conectado a la base de datos MySQL');
+db.connect(err => {
+  if (err) {
+    console.error('Error conectando a la base de datos:', err);
+    return;
+  }
+  console.log('Conectado a la base de datos MySQL');
 
-    app.listen(PORT, () => {
-        console.log(`Servidor escuchando en http://localhost:${PORT}`);
-    });
+  app.listen(PORT, () => {
+    console.log(`Servidor escuchando en http://localhost:${PORT}`);
+  });
 });
