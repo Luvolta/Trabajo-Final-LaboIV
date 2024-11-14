@@ -4,14 +4,21 @@ const router = express.Router();
 const ideasController = require('../controllers/ideasController');
 const authMiddleware = require('../middleware/authMiddleware'); // Si usas autenticación
 
+
+/**
+ * @swagger
+ * tags:
+ *   name: Ideas
+ *   description: ideas de proyecto
+ */
+
 /**
  * @swagger
  * /api/ideas:
  *   post:
  *     summary: Crear una nueva idea
  *     description: Crea una nueva idea de proyecto.
- *     tags:
- *       - Ideas
+ *     tags: [Ideas]      
  *     requestBody:
  *       required: true
  *       content:
@@ -22,9 +29,14 @@ const authMiddleware = require('../middleware/authMiddleware'); // Si usas auten
  *               description:
  *                 type: string
  *                 description: Descripción de la idea.
+ *                 example: "Aplicación web para gestionar tareas diarias."
  *               userId:
  *                 type: integer
  *                 description: ID del usuario que crea la idea.
+ *                 example: 123
+ *             required:
+ *               - description
+ *               - userId
  *     responses:
  *       201:
  *         description: Idea creada exitosamente.
@@ -37,7 +49,7 @@ const authMiddleware = require('../middleware/authMiddleware'); // Si usas auten
  *                   type: string
  *                   example: Idea creada exitosamente
  *       400:
- *         description: Los campos título, descripción y userId son obligatorios.
+ *         description: Los campos descripción y userId son obligatorios.
  *       500:
  *         description: Error al crear la idea.
  *     security:
@@ -51,8 +63,7 @@ router.post('/', authMiddleware, ideasController.createIdea);  // Requiere auten
  *   get:
  *     summary: Obtener todas las ideas
  *     description: Devuelve todas las ideas disponibles.
- *     tags:
- *       - Ideas
+ *     tags: [Ideas]
  *     responses:
  *       200:
  *         description: Lista de todas las ideas.
@@ -72,7 +83,7 @@ router.post('/', authMiddleware, ideasController.createIdea);  // Requiere auten
  *       500:
  *         description: Error al obtener las ideas.
  */
-router.get('/', ideasController.getAllIdeas);
+router.get('/',authMiddleware, ideasController.getAllIdeas);
 
 /**
  * @swagger
@@ -80,8 +91,7 @@ router.get('/', ideasController.getAllIdeas);
  *   get:
  *     summary: Obtener una idea por ID
  *     description: Devuelve una idea específica basada en el ID proporcionado.
- *     tags:
- *       - Ideas
+ *     tags: [Ideas]
  *     parameters:
  *       - in: path
  *         name: id
@@ -108,7 +118,7 @@ router.get('/', ideasController.getAllIdeas);
  *       500:
  *         description: Error al obtener la idea.
  */
-router.get('/:id', ideasController.getIdeaById);
+router.get('/:id',authMiddleware, ideasController.getIdeaById);
 
 /**
  * @swagger
@@ -116,8 +126,7 @@ router.get('/:id', ideasController.getIdeaById);
  *   put:
  *     summary: Actualizar una idea
  *     description: Actualiza el título y la descripción de una idea existente.
- *     tags:
- *       - Ideas
+ *     tags: [Ideas]
  *     parameters:
  *       - in: path
  *         name: id
@@ -153,8 +162,7 @@ router.put('/:id', authMiddleware, ideasController.updateIdea);  // Requiere aut
  *   delete:
  *     summary: Eliminar una idea
  *     description: Elimina una idea especificada por el ID.
- *     tags:
- *       - Ideas
+ *     tags: [Ideas]
  *     parameters:
  *       - in: path
  *         name: id
