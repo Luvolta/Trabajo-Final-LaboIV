@@ -78,7 +78,6 @@ const router = express.Router();
 router.post('/login', (req, res) => {
     const { email, password } = req.body;
   
-    console.log('Datos de inicio de sesión:', { email, password });
   
     // Consulta para buscar el usuario con el email proporcionado
     const query = 'SELECT * FROM users WHERE email = ?';
